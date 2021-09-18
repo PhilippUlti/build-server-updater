@@ -1,0 +1,83 @@
+# !/bin/bash
+# Building-Server Plugin-Updater-Script
+
+#########################################
+# Folder to install all plugins to
+plugins_folder="BuildingServer\Plugins"
+#########################################
+
+#########################################
+# Download a plugin from a specific url.
+# Argruments:
+# 	$1 : Plugin-Name
+# 	$2 : Build-Name
+# 	$3 : Download Link
+#########################################
+function download() {
+  echo -e ""
+  echo -e "..... initializing $1 download ....."
+  echo -e ""
+  curl -o $plugins_folder/$2 -L "$3"
+  echo -e ""
+  echo -e "download finished!"
+}
+
+baseUrlBuildHost="https://ci.athion.net/job"
+baseUrlBuildNumber="lastSuccessfulBuild/buildNumber"
+
+function installFAWE() {
+  pluginName="FastAsyncWorldEdit-1.17"
+  buildNumber="$(curl -s "http://ci.athion.net/job/$pluginName/$baseUrlBuildNumber")"
+  buildName="$pluginName-$buildNumber.jar"
+  
+  download "$pluginName" "$buildName" "https://ci.athion.net/job/FastAsyncWorldEdit-1.17/lastSuccessfulBuild/artifact/artifacts/$buildName"
+}
+
+function installWorldGuard() {
+  pluginName="WorldGuard"
+  buildName="$(curl -v --silent https://dev.bukkit.org/projects/worldguard/files/latest 2>&1 | grep location | tail -c 35 | head --bytes -7).jar"
+  
+  download "$pluginName" "$buildName" "https://dev.bukkit.org/projects/worldguard/files/latest"
+}
+
+function installFAVS() {
+  pluginName="FastAsyncVoxelSniper"
+  buildName="$(curl -v --silent https://dev.bukkit.org/projects/favs/files/latest 2>&1 | grep location | tail -c 34 | head --bytes -7).jar"
+  
+  download "$pluginName" "$buildName" "https://dev.bukkit.org/projects/favs/files/latest"
+}
+
+function installBuildersUtilities() {
+  pluginName="Builders-Utilities"
+  buildNumber="$(curl -s "$baseUrlBuildHost/$pluginName/$baseUrlBuildNumber")"
+  buildName="$pluginName-$buildNumber.jar"
+  
+  download "$pluginName" "$buildName" "https://ci.athion.net/view/%20Other%20Projects/job/Builders-Utilities/lastSuccessfulBuild/artifact/build/libs/$buildName"
+}
+
+function installGoPaint() {
+  pluginName="goPaint-1.14+"
+  buildNumber="$(curl -s "$baseUrlBuildHost/$pluginName/$baseUrlBuildNumber")"
+  buildName="$pluginName-$buildNumber.jar"
+  
+  download "$pluginName" "$buildName" "https://ci.athion.net/view/Everything/job/goPaint-1.14+/lastSuccessfulBuild/artifact/build/libs/$buildName"
+}
+
+function installGoBrush() {
+  pluginName="goBrush-1.13+"
+  buildNumber="$(curl -s "$baseUrlBuildHost/$pluginName/$baseUrlBuildNumber")"
+  buildName="$pluginName-$buildNumber.jar"
+  
+  download "$pluginName" "$buildName" "https://ci.athion.net/view/Everything/job/goBrush-1.13+/lastSuccessfulBuild/artifact/build/libs/$buildName"
+}
+
+# Installation Script
+echo "Starting installation of build-server-plugins"
+installFAWE
+installWorldGuard
+installFAVS
+installBuildersUtilities
+installGoPaint
+installGoBrush
+echo -e ""
+echo "Installation finished!"
